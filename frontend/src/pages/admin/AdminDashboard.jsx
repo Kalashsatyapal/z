@@ -2,6 +2,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Product Schema
 const productSchema = z.object({
@@ -37,42 +40,76 @@ export default function AdminDashboard() {
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const onProductSubmit = (data) => {
+  const onProductSubmit = async (data) => {
+    setLoading(true);
     const file = data.image[0];
     const newProduct = {
-      id: Date.now(),
       name: data.name,
       price: data.price,
       description: data.description || "",
       imageUrl: URL.createObjectURL(file),
     };
-    setProducts((prev) => [...prev, newProduct]);
-    resetProductForm();
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/products', newProduct);
+      setProducts((prev) => [...prev, response.data]);
+      resetProductForm();
+      toast.success('Product added successfully!');
+    } catch (error) {
+      toast.error('Failed to add product!');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const onCategorySubmit = (data) => {
-    const newCategory = {
-      id: Date.now(),
-      name: data.name,
-    };
-    setCategories((prev) => [...prev, newCategory]);
-    resetCategoryForm();
+  const onCategorySubmit = async (data) => {
+    setLoading(true);
+    try {
+      const response = await axios.post('http://localhost:5000/api/categories', { name: data.name });
+      setCategories((prev) => [...prev, response.data]);
+      resetCategoryForm();
+      toast.success('Category added successfully!');
+    } catch (error) {
+      toast.error('Failed to add category!');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const deleteProduct = (id) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+  const deleteProduct = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/products/${id}`);
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      toast.success('Product deleted successfully!');
+    } catch (error) {
+      toast.error('Failed to delete product!');
+    }
   };
 
-  const deleteCategory = (id) => {
-    setCategories((prev) => prev.filter((c) => c.id !== id));
+  const deleteCategory = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/categories/${id}`);
+      setCategories((prev) => prev.filter((c) => c.id !== id));
+      toast.success('Category deleted successfully!');
+    } catch (error) {
+      toast.error('Failed to delete category!');
+    }
   };
 
   return (
     <div className="w-full h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-7xl h-full bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
         {/* Header */}
-  
+        <h1 className="text-3xl font-semibold p-4">Admin Dashboard</h1>
+
+        {/* Loading State */}
+        {loading && (
+          <div className="fixed inset-0 bg-gray-500 opacity-50 flex items-center justify-center">
+            <div className="text-white text-xl">Loading...</div>
+          </div>
+        )}
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-8">
