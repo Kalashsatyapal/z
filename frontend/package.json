@@ -11,10 +11,15 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.30.0",
+    "@hookform/resolvers": "^5.0.1",
     "@tailwindcss/vite": "^4.1.4",
+    "axios": "^1.9.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwindcss": "^4.1.4"
+    "react-hook-form": "^7.56.1",
+    "react-router-dom": "^7.5.2",
+    "tailwindcss": "^4.1.4",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
