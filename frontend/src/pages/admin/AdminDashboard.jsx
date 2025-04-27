@@ -1,17 +1,22 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Product Schema
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
-  price: z.number({ invalid_type_error: "Price must be a number" }).positive("Price must be positive"),
+  price: z
+    .number({ invalid_type_error: "Price must be a number" })
+    .positive("Price must be positive"),
   description: z.string().optional(),
-  image: z.instanceof(FileList).refine(files => files.length === 1, "Product image is required")
+  image: z
+    .instanceof(FileList)
+    .refine((files) => files.length === 1, "Product image is required"),
+  category: z.string().min(1, "Category is required"),
 });
 
 // Category Schema
@@ -42,23 +47,63 @@ export default function AdminDashboard() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const onProductSubmit = async (data) => {
-    setLoading(true);
-    const file = data.image[0];
-    const newProduct = {
-      name: data.name,
-      price: data.price,
-      description: data.description || "",
-      imageUrl: URL.createObjectURL(file),
+  // Fetch categories on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/categories");
+        setCategories(response.data);
+      } catch (error) {
+        toast.error("Failed to fetch categories!");
+      }
     };
 
+    fetchCategories();
+  }, []);
+
+  // Fetch products when the component is mounted or after adding a new product
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/products");
+        setProducts(response.data);
+      } catch (error) {
+        toast.error("Failed to fetch products!");
+      }
+    };
+
+    fetchProducts();
+  }, [products]); // Re-fetch products whenever a new product is added
+
+  const onProductSubmit = async (data) => {
+    console.log("Form data:", data); // Log form data for debugging
+
+    setLoading(true);
+    const file = data.image[0];
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("price", data.price);
+    formData.append("description", data.description || "");
+    formData.append("image", file); // Append the image file
+    formData.append("categoryId", data.category); // Append category ID
+
     try {
-      const response = await axios.post('http://localhost:5000/api/products', newProduct);
-      setProducts((prev) => [...prev, response.data]);
+      const response = await axios.post(
+        "http://localhost:5000/api/products",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Ensure the content type is set for file upload
+          },
+        }
+      );
+      console.log("Product added response:", response.data); // Log the response from the server
+      setProducts((prev) => [...prev, response.data]); // Add the new product to the list
       resetProductForm();
-      toast.success('Product added successfully!');
+      toast.success("Product added successfully!");
     } catch (error) {
-      toast.error('Failed to add product!');
+      console.error("Error adding product:", error); // Log any errors to the console
+      toast.error("Failed to add product!");
     } finally {
       setLoading(false);
     }
@@ -67,12 +112,15 @@ export default function AdminDashboard() {
   const onCategorySubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/categories', { name: data.name });
+      const response = await axios.post(
+        "http://localhost:5000/api/categories",
+        { name: data.name }
+      );
       setCategories((prev) => [...prev, response.data]);
       resetCategoryForm();
-      toast.success('Category added successfully!');
+      toast.success("Category added successfully!");
     } catch (error) {
-      toast.error('Failed to add category!');
+      toast.error("Failed to add category!");
     } finally {
       setLoading(false);
     }
@@ -82,9 +130,9 @@ export default function AdminDashboard() {
     try {
       await axios.delete(`http://localhost:5000/api/products/${id}`);
       setProducts((prev) => prev.filter((p) => p.id !== id));
-      toast.success('Product deleted successfully!');
+      toast.success("Product deleted successfully!");
     } catch (error) {
-      toast.error('Failed to delete product!');
+      toast.error("Failed to delete product!");
     }
   };
 
@@ -92,9 +140,9 @@ export default function AdminDashboard() {
     try {
       await axios.delete(`http://localhost:5000/api/categories/${id}`);
       setCategories((prev) => prev.filter((c) => c.id !== id));
-      toast.success('Category deleted successfully!');
+      toast.success("Category deleted successfully!");
     } catch (error) {
-      toast.error('Failed to delete category!');
+      toast.error("Failed to delete category!");
     }
   };
 
@@ -114,18 +162,22 @@ export default function AdminDashboard() {
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
             {/* Product Form */}
             <div className="border p-6 rounded-lg shadow flex flex-col">
               <h2 className="text-2xl font-semibold mb-4">Manage Products</h2>
-              <form onSubmit={handleSubmitProduct(onProductSubmit)} className="flex flex-col gap-4 mb-6">
+              <form
+                onSubmit={handleSubmitProduct(onProductSubmit)}
+                className="flex flex-col gap-4 mb-6"
+              >
                 <input
                   type="text"
                   placeholder="Product Name"
                   {...registerProduct("name")}
                   className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                {productErrors.name && <p className="text-red-500">{productErrors.name.message}</p>}
+                {productErrors.name && (
+                  <p className="text-red-500">{productErrors.name.message}</p>
+                )}
 
                 <input
                   type="number"
@@ -134,7 +186,9 @@ export default function AdminDashboard() {
                   {...registerProduct("price", { valueAsNumber: true })}
                   className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                {productErrors.price && <p className="text-red-500">{productErrors.price.message}</p>}
+                {productErrors.price && (
+                  <p className="text-red-500">{productErrors.price.message}</p>
+                )}
 
                 <textarea
                   placeholder="Description (optional)"
@@ -147,7 +201,25 @@ export default function AdminDashboard() {
                   {...registerProduct("image")}
                   className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                {productErrors.image && <p className="text-red-500">{productErrors.image.message}</p>}
+                {productErrors.image && (
+                  <p className="text-red-500">{productErrors.image.message}</p>
+                )}
+
+                {/* Category Dropdown */}
+                <select
+                  {...registerProduct("category")}
+                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+                {productErrors.category && (
+                  <p className="text-red-500">{productErrors.category.message}</p>
+                )}
 
                 <button
                   type="submit"
@@ -161,9 +233,16 @@ export default function AdminDashboard() {
               <div className="overflow-y-auto max-h-64">
                 <h3 className="text-xl font-semibold mb-2">Products:</h3>
                 {products.map((product) => (
-                  <div key={product.id} className="border p-4 mb-2 rounded flex justify-between items-center">
+                  <div
+                    key={product.id}
+                    className="border p-4 mb-2 rounded flex justify-between items-center"
+                  >
                     <div className="flex items-center gap-4">
-                      <img src={product.imageUrl} alt={product.name} className="w-20 h-20 object-cover rounded" />
+                      <img
+                        src={product.imageUrl} // Make sure the image URL is returned by the backend
+                        alt={product.name}
+                        className="w-20 h-20 object-cover rounded"
+                      />
                       <div>
                         <p className="font-bold">{product.name}</p>
                         <p>${product.price}</p>
@@ -183,14 +262,19 @@ export default function AdminDashboard() {
             {/* Category Form */}
             <div className="border p-6 rounded-lg shadow flex flex-col">
               <h2 className="text-2xl font-semibold mb-4">Manage Categories</h2>
-              <form onSubmit={handleSubmitCategory(onCategorySubmit)} className="flex flex-col gap-4 mb-6">
+              <form
+                onSubmit={handleSubmitCategory(onCategorySubmit)}
+                className="flex flex-col gap-4 mb-6"
+              >
                 <input
                   type="text"
                   placeholder="Category Name"
                   {...registerCategory("name")}
                   className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
-                {categoryErrors.name && <p className="text-red-500">{categoryErrors.name.message}</p>}
+                {categoryErrors.name && (
+                  <p className="text-red-500">{categoryErrors.name.message}</p>
+                )}
 
                 <button
                   type="submit"
@@ -204,7 +288,10 @@ export default function AdminDashboard() {
               <div className="overflow-y-auto max-h-64">
                 <h3 className="text-xl font-semibold mb-2">Categories:</h3>
                 {categories.map((category) => (
-                  <div key={category.id} className="border p-4 mb-2 rounded flex justify-between items-center">
+                  <div
+                    key={category.id}
+                    className="border p-4 mb-2 rounded flex justify-between items-center"
+                  >
                     <p>{category.name}</p>
                     <button
                       onClick={() => deleteCategory(category.id)}
@@ -216,7 +303,6 @@ export default function AdminDashboard() {
                 ))}
               </div>
             </div>
-
           </div>
         </div>
       </div>
