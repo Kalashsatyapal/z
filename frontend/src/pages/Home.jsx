@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaMinus, FaPlus, FaShoppingCart, FaTrash, FaShoppingBag } from "react-icons/fa"; 
+import {
+  FaMinus,
+  FaPlus,
+  FaShoppingCart,
+  FaTrash,
+  FaShoppingBag,
+} from "react-icons/fa";
 import ProductCard from "./productcard";
 
 // 👇 Define your API URL here
@@ -108,7 +114,10 @@ export default function Home() {
                           >
                             <FaMinus size={16} />
                           </button>
-                          <span>{item.quantity}</span>
+                          {/* Quantity display with some styling */}
+                          <span className="text-lg font-semibold text-gray-700">
+                            {item.quantity}
+                          </span>
                           <button
                             onClick={() =>
                               updateQuantity(item.id, item.quantity + 1)
@@ -131,7 +140,7 @@ export default function Home() {
                   {/* Buy Now Button */}
                   <button
                     className="mt-4 w-full flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-indigo font-semibold py-2 rounded-lg transition duration-300"
-                    onClick={() => alert('Thank you for your purchase!')}
+                    onClick={() => alert("Thank you for your purchase!")}
                   >
                     <FaShoppingBag />
                     <span>Buy Now</span>
