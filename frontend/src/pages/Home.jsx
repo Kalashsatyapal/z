@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaMinus, FaPlus, FaShoppingCart, FaTrash } from "react-icons/fa"; // Cart icon from React Icons
+import { FaMinus, FaPlus, FaShoppingCart, FaTrash, FaShoppingBag } from "react-icons/fa"; // Added FaShoppingBag
 import ProductCard from "./ProductCard";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState(() => {
-    // Load cart from localStorage if available
     const savedCart = JSON.parse(localStorage.getItem("cart"));
     return savedCart || [];
   });
-  const [cartOpen, setCartOpen] = useState(false); // To toggle the cart dropdown
+  const [cartOpen, setCartOpen] = useState(false);
 
-  // Fetch products from the server
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -31,25 +29,21 @@ export default function Home() {
     fetchProducts();
   }, []);
 
-  // Add product to cart
   const addToCart = (product) => {
     setCart((prevCart) => {
       const existingProductIndex = prevCart.findIndex(
         (item) => item.id === product.id
       );
       if (existingProductIndex > -1) {
-        // Update quantity if the product already exists in the cart
         const updatedCart = [...prevCart];
         updatedCart[existingProductIndex].quantity += 1;
         return updatedCart;
       } else {
-        // Add new product to the cart with quantity 1
         return [...prevCart, { ...product, quantity: 1 }];
       }
     });
   };
 
-  // Update quantity of product in the cart
   const updateQuantity = (productId, quantity) => {
     setCart((prevCart) => {
       return prevCart.map((item) =>
@@ -58,12 +52,10 @@ export default function Home() {
     });
   };
 
-  // Remove product from the cart
   const removeFromCart = (productId) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
   };
 
-  // Save cart to localStorage
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
@@ -75,10 +67,9 @@ export default function Home() {
         <h1 className="text-3xl font-extrabold text-indigo-700">Zmart</h1>
 
         <div className="relative">
-          {/* Cart Icon with total number of items */}
           <button
             className="flex items-center space-x-2 text-lg font-semibold"
-            onClick={() => setCartOpen((prev) => !prev)} // Toggle cart visibility
+            onClick={() => setCartOpen((prev) => !prev)}
           >
             <FaShoppingCart className="text-indigo-700" size={24} />
             <span className="bg-red-500 text-white rounded-full px-2 py-1 text-sm">
@@ -88,50 +79,61 @@ export default function Home() {
 
           {/* Cart Dropdown */}
           {cartOpen && (
-            <div className="absolute right-0 mt-2 w-[24rem] bg-white shadow-lg rounded-lg p-4">
-              <h3 className="font-semibold text-gray-700">Your Cart</h3>
+            <div className="absolute right-0 mt-2 w-[24rem] bg-white shadow-lg rounded-lg p-4 z-10">
+              <h3 className="font-semibold text-gray-700 mb-2">Your Cart</h3>
               {cart.length === 0 ? (
                 <p className="text-gray-500">Your cart is empty.</p>
               ) : (
-                <ul>
-                  {cart.map((item) => (
-                    <li
-                      key={item.id}
-                      className="flex justify-between items-center py-2"
-                    >
-                      <div>
-                        <p className="font-semibold">{item.name}</p>
-                        <p className="text-gray-500">Price: ${item.price}</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity - 1)
-                          }
-                          disabled={item.quantity <= 1}
-                          className="px-3 py-1 bg-indigo-500 text-indigo rounded-full"
-                        >
-                          <FaMinus size={16} />
-                        </button>
-                        <span>{item.quantity}</span>
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
-                          }
-                          className="px-3 py-1 bg-indigo-500 text-indigo rounded-full"
-                        >
-                          <FaPlus size={16} />
-                        </button>
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="ml-4 text-red-600 hover:text-red-800"
-                        >
-                          <FaTrash size={16} />
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                <>
+                  <ul className="max-h-64 overflow-y-auto">
+                    {cart.map((item) => (
+                      <li
+                        key={item.id}
+                        className="flex justify-between items-center py-2"
+                      >
+                        <div>
+                          <p className="font-semibold">{item.name}</p>
+                          <p className="text-gray-500">Price: ${item.price}</p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity - 1)
+                            }
+                            disabled={item.quantity <= 1}
+                            className="px-3 py-1 bg-indigo-500 text-indigo rounded-full"
+                          >
+                            <FaMinus size={16} />
+                          </button>
+                          <span>{item.quantity}</span>
+                          <button
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity + 1)
+                            }
+                            className="px-3 py-1 bg-indigo-500 text-indigo rounded-full"
+                          >
+                            <FaPlus size={16} />
+                          </button>
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="ml-4 text-red-600 hover:text-red-800"
+                          >
+                            <FaTrash size={16} />
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Buy Now Button */}
+                  <button
+                    className="mt-4 w-full flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-indigo font-semibold py-2 rounded-lg transition duration-300"
+                    onClick={() => alert('Thank you for your purchase!')} // Add your buy logic here
+                  >
+                    <FaShoppingBag />
+                    <span>Buy Now</span>
+                  </button>
+                </>
               )}
             </div>
           )}
