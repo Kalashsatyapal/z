@@ -62,23 +62,40 @@ export default function Home() {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
   };
 
-  // Generate PDF and clear cart
+  // Generate stylized PDF receipt and clear cart
   const generatePDF = () => {
     const doc = new jsPDF();
-    doc.setFontSize(20);
-    doc.text("Order Receipt", 20, 20);
-    doc.setFontSize(12);
+    doc.setFontSize(22);
+    doc.text("Zmart - Order Receipt", 20, 20);
 
-    let yPosition = 30;
+    doc.setFontSize(14);
+    doc.text("------------------------------------------------", 20, 30);
+    doc.text("Items:", 20, 40);
+
+    let yPosition = 50;
 
     cart.forEach((item) => {
-      doc.text(`${item.name} x ${item.quantity} - $${item.price * item.quantity}`, 20, yPosition);
+      doc.text(`${item.name} (x${item.quantity})`, 20, yPosition);
+      doc.text(`$${(item.price * item.quantity).toFixed(2)}`, 150, yPosition);
       yPosition += 10;
     });
 
+    doc.text("------------------------------------------------", 20, yPosition);
+    yPosition += 10;
+    doc.setFontSize(16);
     doc.text(`Total: $${calculateTotal()}`, 20, yPosition);
+    yPosition += 10;
+
+    doc.setFontSize(12);
+    doc.text("------------------------------------------------", 20, yPosition);
+    yPosition += 10;
+
+    doc.text("Thank you for shopping with us!", 20, yPosition);
+
+    // Add some spacing and another page with the Zmart logo or custom message
     doc.addPage();
-    doc.text("Thank you for your purchase!", 20, 20);
+    doc.text("Zmart - Thank You!", 20, 20);
+    doc.text("Visit our store again soon!", 20, 40);
 
     // Save the PDF file
     doc.save("receipt.pdf");
