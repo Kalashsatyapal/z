@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaMinus, FaPlus, FaShoppingCart, FaTrash, FaShoppingBag } from "react-icons/fa";
+import {
+  FaMinus,
+  FaPlus,
+  FaShoppingCart,
+  FaTrash,
+  FaShoppingBag,
+} from "react-icons/fa";
 import ProductCard from "./productcard";
 import jsPDF from "jspdf";
 
@@ -35,7 +41,9 @@ export default function Home() {
 
   const addToCart = (product) => {
     setCart((prevCart) => {
-      const existingProductIndex = prevCart.findIndex((item) => item.id === product.id);
+      const existingProductIndex = prevCart.findIndex(
+        (item) => item.id === product.id
+      );
       if (existingProductIndex > -1) {
         const updatedCart = [...prevCart];
         updatedCart[existingProductIndex].quantity += 1;
@@ -59,7 +67,9 @@ export default function Home() {
   };
 
   const calculateTotal = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+    return cart
+      .reduce((total, item) => total + item.price * item.quantity, 0)
+      .toFixed(2);
   };
 
   // Generate stylized PDF receipt and clear cart
@@ -128,7 +138,7 @@ export default function Home() {
 
           {/* Cart Dropdown */}
           {cartOpen && (
-            <div className="absolute right-0 mt-2 w-[24rem] bg-white shadow-lg rounded-lg p-4 z-10">
+            <div className="absolute right-0 mt-2 w-[48rem] bg-white shadow-lg rounded-lg p-4 z-10">
               <h3 className="font-semibold text-gray-700 mb-2">Your Cart</h3>
               {cart.length === 0 ? (
                 <p className="text-gray-500">Your cart is empty.</p>
@@ -136,14 +146,21 @@ export default function Home() {
                 <>
                   <ul className="max-h-64 overflow-y-auto">
                     {cart.map((item) => (
-                      <li key={item.id} className="flex justify-between items-center py-2">
+                      <li
+                        key={item.id}
+                        className="flex justify-between items-center py-2"
+                      >
                         <div>
-                          <p className="font-semibold">{item.name}</p>
-                          <p className="text-gray-500">Price: ${item.price}</p>
+                          <p className="font-semibold">
+                            {item.name} -{" "}
+                            <span className="text-gray-500">${item.price}</span>
+                          </p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity - 1)
+                            }
                             disabled={item.quantity <= 1}
                             className="px-3 py-1 bg-indigo-500 text-indigo rounded-full"
                           >
@@ -153,7 +170,9 @@ export default function Home() {
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity + 1)
+                            }
                             className="px-3 py-1 bg-indigo-500 text-indigo rounded-full"
                           >
                             <FaPlus size={16} />
@@ -173,7 +192,9 @@ export default function Home() {
                   <div className="mt-4 border-t pt-2">
                     <div className="flex justify-between items-center">
                       <span className="font-semibold text-gray-700">Total</span>
-                      <span className="text-xl font-bold text-indigo-600">${calculateTotal()}</span>
+                      <span className="text-xl font-bold text-indigo-600">
+                        ${calculateTotal()}
+                      </span>
                     </div>
                   </div>
 
