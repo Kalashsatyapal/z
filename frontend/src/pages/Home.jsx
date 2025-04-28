@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-  FaMinus,
-  FaPlus,
-  FaShoppingCart,
-  FaTrash,
-  FaShoppingBag,
-} from "react-icons/fa";
+import { FaMinus, FaPlus, FaShoppingCart, FaTrash, FaShoppingBag } from "react-icons/fa";
 import ProductCard from "./productcard";
 
 // 👇 Define your API URL here
@@ -40,9 +34,7 @@ export default function Home() {
 
   const addToCart = (product) => {
     setCart((prevCart) => {
-      const existingProductIndex = prevCart.findIndex(
-        (item) => item.id === product.id
-      );
+      const existingProductIndex = prevCart.findIndex((item) => item.id === product.id);
       if (existingProductIndex > -1) {
         const updatedCart = [...prevCart];
         updatedCart[existingProductIndex].quantity += 1;
@@ -63,6 +55,11 @@ export default function Home() {
 
   const removeFromCart = (productId) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+  };
+
+  // Calculate the total price of items in the cart
+  const calculateTotal = () => {
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
   };
 
   useEffect(() => {
@@ -96,32 +93,24 @@ export default function Home() {
                 <>
                   <ul className="max-h-64 overflow-y-auto">
                     {cart.map((item) => (
-                      <li
-                        key={item.id}
-                        className="flex justify-between items-center py-2"
-                      >
+                      <li key={item.id} className="flex justify-between items-center py-2">
                         <div>
                           <p className="font-semibold">{item.name}</p>
                           <p className="text-gray-500">Price: ${item.price}</p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity - 1)
-                            }
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
                             disabled={item.quantity <= 1}
                             className="px-3 py-1 bg-indigo-500 text-indigo rounded-full"
                           >
                             <FaMinus size={16} />
                           </button>
-                          {/* Quantity display with some styling */}
                           <span className="text-lg font-semibold text-gray-700">
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity + 1)
-                            }
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
                             className="px-3 py-1 bg-indigo-500 text-indigo rounded-full"
                           >
                             <FaPlus size={16} />
