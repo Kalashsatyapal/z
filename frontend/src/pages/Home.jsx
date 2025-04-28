@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaMinus, FaPlus, FaShoppingCart, FaTrash, FaShoppingBag } from "react-icons/fa";
 import ProductCard from "./productcard";
+import jsPDF from "jspdf";
 
 // 👇 Define your API URL here
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -57,9 +58,34 @@ export default function Home() {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
   };
 
-  // Calculate the total price of items in the cart
   const calculateTotal = () => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+  };
+
+  // Generate PDF and clear cart
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(20);
+    doc.text("Order Receipt", 20, 20);
+    doc.setFontSize(12);
+
+    let yPosition = 30;
+
+    cart.forEach((item) => {
+      doc.text(`${item.name} x ${item.quantity} - $${item.price * item.quantity}`, 20, yPosition);
+      yPosition += 10;
+    });
+
+    doc.text(`Total: $${calculateTotal()}`, 20, yPosition);
+    doc.addPage();
+    doc.text("Thank you for your purchase!", 20, 20);
+
+    // Save the PDF file
+    doc.save("receipt.pdf");
+
+    // Clear cart after successful purchase
+    setCart([]);
+    localStorage.setItem("cart", JSON.stringify([]));
   };
 
   useEffect(() => {
@@ -137,7 +163,7 @@ export default function Home() {
                   {/* Buy Now Button */}
                   <button
                     className="mt-4 w-full flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-indigo font-semibold py-2 rounded-lg transition duration-300"
-                    onClick={() => alert("Thank you for your purchase!")}
+                    onClick={generatePDF}
                   >
                     <FaShoppingBag />
                     <span>Buy Now</span>
