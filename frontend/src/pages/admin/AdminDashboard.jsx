@@ -32,23 +32,19 @@ export default function AdminDashboard() {
     handleSubmit: handleSubmitProduct,
     formState: { errors: productErrors },
     reset: resetProductForm,
-  } = useForm({
-    resolver: zodResolver(productSchema),
-  });
+  } = useForm({ resolver: zodResolver(productSchema) });
+
   const {
     register: registerCategory,
     handleSubmit: handleSubmitCategory,
     formState: { errors: categoryErrors },
     reset: resetCategoryForm,
-  } = useForm({
-    resolver: zodResolver(categorySchema),
-  });
+  } = useForm({ resolver: zodResolver(categorySchema) });
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -61,7 +57,6 @@ export default function AdminDashboard() {
     fetchCategories();
   }, []);
 
-  // Fetch products when the component is mounted or after adding a new product
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -72,35 +67,26 @@ export default function AdminDashboard() {
       }
     };
     fetchProducts();
-  }, [products]); // Re-fetch products whenever a new product is added
+  }, []);
 
   const onProductSubmit = async (data) => {
-    console.log("Form data:", data); // Log form data for debugging
     setLoading(true);
     const file = data.image[0];
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("price", data.price);
     formData.append("description", data.description || "");
-    formData.append("image", file); // Append the image file
-    formData.append("categoryId", data.category); // Append category ID
+    formData.append("image", file);
+    formData.append("categoryId", data.category);
 
     try {
-      const response = await axios.post(
-        `${backendUrl}/api/products`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Ensure the content type is set for file upload
-          },
-        }
-      );
-      console.log("Product added response:", response.data); // Log the response from the server
-      setProducts((prev) => [...prev, response.data]); // Add the new product to the list
+      const response = await axios.post(`${backendUrl}/api/products`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setProducts((prev) => [...prev, response.data]);
       resetProductForm();
       toast.success("Product added successfully!");
     } catch (error) {
-      console.error("Error adding product:", error); // Log any errors to the console
       toast.error("Failed to add product!");
     } finally {
       setLoading(false);
@@ -110,10 +96,9 @@ export default function AdminDashboard() {
   const onCategorySubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await axios.post(
-        `${backendUrl}/api/categories`,
-        { name: data.name }
-      );
+      const response = await axios.post(`${backendUrl}/api/categories`, {
+        name: data.name,
+      });
       setCategories((prev) => [...prev, response.data]);
       resetCategoryForm();
       toast.success("Category added successfully!");
@@ -148,7 +133,7 @@ export default function AdminDashboard() {
     <div className="w-full h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-7xl h-full bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
         {/* Header */}
-        <h1 className="text-3xl text-indigo-600 font-semibold p-4">Admin Dashboard</h1>
+        <h1 className="text-3xl text-indigo-700 font-semibold p-4">Admin Dashboard</h1>
 
         {/* Loading State */}
         {loading && (
@@ -159,22 +144,19 @@ export default function AdminDashboard() {
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Product Form */}
-            <div className="border p-6 rounded-lg shadow flex flex-col bg-white">
+            <div className="border p-6 rounded-lg shadow flex flex-col bg-white text-black">
               <h2 className="text-2xl font-semibold mb-4">Manage Products</h2>
-              <form
-                onSubmit={handleSubmitProduct(onProductSubmit)}
-                className="flex flex-col gap-4 mb-6"
-              >
+              <form onSubmit={handleSubmitProduct(onProductSubmit)} className="flex flex-col gap-4 mb-6">
                 <input
                   type="text"
                   placeholder="Product Name"
                   {...registerProduct("name")}
-                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                 />
                 {productErrors.name && (
-                  <p className="text-red-500">{productErrors.name.message}</p>
+                  <p className="text-red-500 text-sm">{productErrors.name.message}</p>
                 )}
 
                 <input
@@ -182,31 +164,31 @@ export default function AdminDashboard() {
                   step="0.01"
                   placeholder="Price"
                   {...registerProduct("price", { valueAsNumber: true })}
-                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                 />
                 {productErrors.price && (
-                  <p className="text-red-500">{productErrors.price.message}</p>
+                  <p className="text-red-500 text-sm">{productErrors.price.message}</p>
                 )}
 
                 <textarea
                   placeholder="Description (optional)"
                   {...registerProduct("description")}
-                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                 ></textarea>
 
                 <input
                   type="file"
                   {...registerProduct("image")}
-                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                 />
                 {productErrors.image && (
-                  <p className="text-red-500">{productErrors.image.message}</p>
+                  <p className="text-red-500 text-sm">{productErrors.image.message}</p>
                 )}
 
                 {/* Category Dropdown */}
                 <select
                   {...registerProduct("category")}
-                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                 >
                   <option value="">Select Category</option>
                   {categories.map((category) => (
@@ -216,7 +198,7 @@ export default function AdminDashboard() {
                   ))}
                 </select>
                 {productErrors.category && (
-                  <p className="text-red-500">{productErrors.category.message}</p>
+                  <p className="text-red-500 text-sm">{productErrors.category.message}</p>
                 )}
 
                 <button
@@ -233,7 +215,7 @@ export default function AdminDashboard() {
                 {products.map((product) => (
                   <div
                     key={product.id}
-                    className="border p-4 mb-2 rounded flex justify-between items-center"
+                    className="border p-4 mb-2 rounded flex justify-between items-center bg-gray-50 text-black"
                   >
                     <div className="flex items-center gap-4">
                       <img
@@ -258,22 +240,18 @@ export default function AdminDashboard() {
             </div>
 
             {/* Category Form */}
-            <div className="border p-6 rounded-lg shadow flex flex-col bg-white">
+            <div className="border p-6 rounded-lg shadow flex flex-col bg-white text-black">
               <h2 className="text-2xl font-semibold mb-4">Manage Categories</h2>
-              <form
-                onSubmit={handleSubmitCategory(onCategorySubmit)}
-                className="flex flex-col gap-4 mb-6"
-              >
+              <form onSubmit={handleSubmitCategory(onCategorySubmit)} className="flex flex-col gap-4 mb-6">
                 <input
                   type="text"
                   placeholder="Category Name"
                   {...registerCategory("name")}
-                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500 text-black"
                 />
                 {categoryErrors.name && (
-                  <p className="text-red-500">{categoryErrors.name.message}</p>
+                  <p className="text-red-500 text-sm">{categoryErrors.name.message}</p>
                 )}
-
                 <button
                   type="submit"
                   className="bg-gradient-to-r from-green-500 to-teal-600 text-white py-2 rounded-md shadow-md hover:from-green-600 hover:to-teal-700 transition-all duration-200 ease-in-out"
@@ -288,7 +266,7 @@ export default function AdminDashboard() {
                 {categories.map((category) => (
                   <div
                     key={category.id}
-                    className="border p-4 mb-2 rounded flex justify-between items-center"
+                    className="border p-4 mb-2 rounded flex justify-between items-center bg-gray-50 text-black"
                   >
                     <p>{category.name}</p>
                     <button
@@ -301,6 +279,7 @@ export default function AdminDashboard() {
                 ))}
               </div>
             </div>
+
           </div>
         </div>
       </div>
