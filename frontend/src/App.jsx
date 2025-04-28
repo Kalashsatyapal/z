@@ -9,7 +9,6 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/payment" element={<PaymentPage />} />
         <Route path="/admin/*" element={<AdminRoutes />} />
       </Routes>
     </Router>
