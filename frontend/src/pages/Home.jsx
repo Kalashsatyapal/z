@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaMinus, FaPlus, FaShoppingCart, FaTrash, FaShoppingBag } from "react-icons/fa"; 
+import {
+  FaMinus,
+  FaPlus,
+  FaShoppingCart,
+  FaTrash,
+  FaShoppingBag,
+} from "react-icons/fa";
 import ProductCard from "./productcard";
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 
 // 👇 Define your API URL here
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const navigate = useNavigate();
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -131,7 +139,7 @@ export default function Home() {
                   {/* Buy Now Button */}
                   <button
                     className="mt-4 w-full flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-indigo font-semibold py-2 rounded-lg transition duration-300"
-                    onClick={() => alert('Thank you for your purchase!')}
+                    onClick={() => navigate("/payment", { state: { cart } })} // Pass the cart as state
                   >
                     <FaShoppingBag />
                     <span>Buy Now</span>
