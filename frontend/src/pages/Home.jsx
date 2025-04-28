@@ -151,7 +151,7 @@ export default function Home() {
                         className="flex justify-between items-center py-2"
                       >
                         <div>
-                          <p className="font-semibold">
+                          <p className="font-semibold text-purple-600">
                             {item.name} -{" "}
                             <span className="text-gray-500">${item.price}</span>
                           </p>
