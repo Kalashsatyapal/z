@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaMinus, FaPlus, FaShoppingCart, FaTrash, FaShoppingBag } from "react-icons/fa"; // Added FaShoppingBag
+import { FaMinus, FaPlus, FaShoppingCart, FaTrash, FaShoppingBag } from "react-icons/fa"; 
 import ProductCard from "./ProductCard";
+
+// 👇 Define your API URL here
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -14,7 +17,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/products");
+        const response = await fetch(`${BACKEND_URL}/api/products`);
         if (response.ok) {
           const data = await response.json();
           setProducts(data);
@@ -128,7 +131,7 @@ export default function Home() {
                   {/* Buy Now Button */}
                   <button
                     className="mt-4 w-full flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-indigo font-semibold py-2 rounded-lg transition duration-300"
-                    onClick={() => alert('Thank you for your purchase!')} // Add your buy logic here
+                    onClick={() => alert('Thank you for your purchase!')}
                   >
                     <FaShoppingBag />
                     <span>Buy Now</span>
@@ -154,7 +157,7 @@ export default function Home() {
               key={product.id}
               product={{
                 ...product,
-                imageUrl: `http://localhost:5000${product.imageUrl}`,
+                imageUrl: `${BACKEND_URL}${product.imageUrl}`,
               }}
               onAddToCart={() => addToCart(product)}
             />

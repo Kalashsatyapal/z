@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 // Product Schema
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
@@ -18,12 +18,10 @@ const productSchema = z.object({
     .refine((files) => files.length === 1, "Product image is required"),
   category: z.string().min(1, "Category is required"),
 });
-
 // Category Schema
 const categorySchema = z.object({
   name: z.string().min(1, "Category name is required"),
 });
-
 export default function AdminDashboard() {
   const {
     register: registerProduct,
@@ -33,7 +31,6 @@ export default function AdminDashboard() {
   } = useForm({
     resolver: zodResolver(productSchema),
   });
-
   const {
     register: registerCategory,
     handleSubmit: handleSubmitCategory,
@@ -42,42 +39,35 @@ export default function AdminDashboard() {
   } = useForm({
     resolver: zodResolver(categorySchema),
   });
-
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-
   // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/categories");
+        const response = await axios.get(`${backendUrl}/api/categories`);
         setCategories(response.data);
       } catch (error) {
         toast.error("Failed to fetch categories!");
       }
     };
-
     fetchCategories();
   }, []);
-
   // Fetch products when the component is mounted or after adding a new product
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/products");
+        const response = await axios.get(`${backendUrl}/api/products`);
         setProducts(response.data);
       } catch (error) {
         toast.error("Failed to fetch products!");
       }
     };
-
     fetchProducts();
   }, [products]); // Re-fetch products whenever a new product is added
-
   const onProductSubmit = async (data) => {
     console.log("Form data:", data); // Log form data for debugging
-
     setLoading(true);
     const file = data.image[0];
     const formData = new FormData();
@@ -86,10 +76,9 @@ export default function AdminDashboard() {
     formData.append("description", data.description || "");
     formData.append("image", file); // Append the image file
     formData.append("categoryId", data.category); // Append category ID
-
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/products",
+        `${backendUrl}/api/products`,
         formData,
         {
           headers: {
@@ -108,12 +97,11 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
-
   const onCategorySubmit = async (data) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/categories",
+        `${import.meta.env.VITE_BACKEND_URL}/api/categories`,
         { name: data.name }
       );
       setCategories((prev) => [...prev, response.data]);
@@ -125,40 +113,35 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
-
   const deleteProduct = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/products/${id}`);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`);
       setProducts((prev) => prev.filter((p) => p.id !== id));
       toast.success("Product deleted successfully!");
     } catch (error) {
       toast.error("Failed to delete product!");
     }
   };
-
   const deleteCategory = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/categories/${id}`);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/categories/${id}`);
       setCategories((prev) => prev.filter((c) => c.id !== id));
       toast.success("Category deleted successfully!");
     } catch (error) {
       toast.error("Failed to delete category!");
     }
   };
-
   return (
     <div className="w-full h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-7xl h-full bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
         {/* Header */}
         <h1 className="text-3xl font-semibold p-4">Admin Dashboard</h1>
-
         {/* Loading State */}
         {loading && (
           <div className="fixed inset-0 bg-gray-500 opacity-50 flex items-center justify-center">
             <div className="text-white text-xl">Loading...</div>
           </div>
         )}
-
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -178,7 +161,6 @@ export default function AdminDashboard() {
                 {productErrors.name && (
                   <p className="text-red-500">{productErrors.name.message}</p>
                 )}
-
                 <input
                   type="number"
                   step="0.01"
@@ -189,13 +171,11 @@ export default function AdminDashboard() {
                 {productErrors.price && (
                   <p className="text-red-500">{productErrors.price.message}</p>
                 )}
-
                 <textarea
                   placeholder="Description (optional)"
                   {...registerProduct("description")}
                   className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 ></textarea>
-
                 <input
                   type="file"
                   {...registerProduct("image")}
@@ -204,7 +184,6 @@ export default function AdminDashboard() {
                 {productErrors.image && (
                   <p className="text-red-500">{productErrors.image.message}</p>
                 )}
-
                 {/* Category Dropdown */}
                 <select
                   {...registerProduct("category")}
@@ -220,7 +199,6 @@ export default function AdminDashboard() {
                 {productErrors.category && (
                   <p className="text-red-500">{productErrors.category.message}</p>
                 )}
-
                 <button
                   type="submit"
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-2 rounded-md shadow-md hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 ease-in-out"
@@ -228,7 +206,6 @@ export default function AdminDashboard() {
                   Add Product
                 </button>
               </form>
-
               {/* Product List */}
               <div className="overflow-y-auto max-h-64">
                 <h3 className="text-xl font-semibold mb-2">Products:</h3>
@@ -258,7 +235,6 @@ export default function AdminDashboard() {
                 ))}
               </div>
             </div>
-
             {/* Category Form */}
             <div className="border p-6 rounded-lg shadow flex flex-col">
               <h2 className="text-2xl font-semibold mb-4">Manage Categories</h2>
@@ -275,7 +251,6 @@ export default function AdminDashboard() {
                 {categoryErrors.name && (
                   <p className="text-red-500">{categoryErrors.name.message}</p>
                 )}
-
                 <button
                   type="submit"
                   className="bg-gradient-to-r from-green-500 to-teal-600 text-white py-2 rounded-md shadow-md hover:from-green-600 hover:to-teal-700 transition-all duration-200 ease-in-out"
@@ -283,7 +258,6 @@ export default function AdminDashboard() {
                   Add Category
                 </button>
               </form>
-
               {/* Category List */}
               <div className="overflow-y-auto max-h-64">
                 <h3 className="text-xl font-semibold mb-2">Categories:</h3>
