@@ -137,6 +137,14 @@ export default function Home() {
                     ))}
                   </ul>
 
+                  {/* Cart Checkout Section */}
+                  <div className="mt-4 border-t pt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-gray-700">Total</span>
+                      <span className="text-xl font-bold text-indigo-600">${calculateTotal()}</span>
+                    </div>
+                  </div>
+
                   {/* Buy Now Button */}
                   <button
                     className="mt-4 w-full flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-indigo font-semibold py-2 rounded-lg transition duration-300"
