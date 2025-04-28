@@ -2,11 +2,9 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaMinus, FaPlus, FaShoppingCart, FaTrash, FaShoppingBag } from "react-icons/fa"; 
 import ProductCard from "./productcard";
-import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 
 // 👇 Define your API URL here
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-const navigate = useNavigate();
 
 export default function Home() {
   const [products, setProducts] = useState([]);
