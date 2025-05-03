@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
-
 export default function PaymentPage() {
   const [cart, setCart] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
@@ -9,30 +8,25 @@ export default function PaymentPage() {
   const [isCardValid, setIsCardValid] = useState(true);
   const [showCardNumber, setShowCardNumber] = useState(false);  // Toggle for visibility
   const navigate = useNavigate();
-
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(savedCart);
   }, []);
-
   const calculateTotal = () => {
     return cart
       .reduce((total, item) => total + item.price * item.quantity, 0)
       .toFixed(2);
   };
-
   const handlePayment = () => {
     // Validate card number if payment method is credit card
     if (paymentMethod === "credit-card" && !cardNumber.match(/^\d{16}$/)) {
       setIsCardValid(false);
       return;
     }
-
     // Generate PDF receipt
     const doc = new jsPDF();
     doc.setFontSize(22);
     doc.text("Zmart - Order Receipt", 20, 20);
-
     let y = 30;
     cart.forEach((item) => {
       doc.setFontSize(14);
@@ -40,18 +34,14 @@ export default function PaymentPage() {
       doc.text(`$${(item.price * item.quantity).toFixed(2)}`, 150, y);
       y += 10;
     });
-
     doc.text("Total: $" + calculateTotal(), 20, y + 10);
     doc.save("receipt.pdf");
-
     // Clear cart and localStorage after payment
     localStorage.setItem("cart", JSON.stringify([]));
     setCart([]);
-
     // Navigate to success page
     navigate("/success");
   };
-
   if (cart.length === 0) {
     return (
       <div className="p-8 text-center text-xl font-medium text-gray-600">
@@ -59,7 +49,6 @@ export default function PaymentPage() {
       </div>
     );
   }
-
   return (
     <div className="bg-[#f8f8f8] min-h-screen p-6 font-sans">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -80,7 +69,6 @@ export default function PaymentPage() {
             ))}
           </div>
         </div>
-
         {/* Payment Box */}
         <div className="bg-white p-8 rounded shadow-lg border border-gray-200">
           <h3 className="text-2xl font-semibold text-gray-800 mb-6">Order Summary</h3>
@@ -97,7 +85,6 @@ export default function PaymentPage() {
             <span>Order Total:</span>
             <span>${calculateTotal()}</span>
           </div>
-
           {/* Payment Methods */}
           <div className="mt-6">
             <label className="block text-gray-800 text-sm font-medium mb-4">
@@ -134,7 +121,6 @@ export default function PaymentPage() {
               </div>
             </div>
           </div>
-
           {/* Payment Form */}
           {paymentMethod === "credit-card" && (
             <div className="mt-6">
@@ -144,7 +130,8 @@ export default function PaymentPage() {
               <div className="flex items-center">
                 <input
                   type={showCardNumber ? "text" : "password"} // Toggle between password and text type
-                  className={`w-full p-4 border ${isCardValid ? 'border-gray-300' : 'border-red-500'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400`}
+                  maxLength={16}  // Limit the input to 16 digits
+                  className={`w-full p-4 border ${isCardValid ? 'border-gray-300' : 'border-red-500'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 text-black`}  // Text color set to black
                   placeholder="1234 5678 1234 5678"
                   value={cardNumber}
                   onChange={(e) => setCardNumber(e.target.value)}
@@ -160,7 +147,6 @@ export default function PaymentPage() {
               {!isCardValid && <p className="text-red-500 text-sm mt-2">Invalid card number. Please enter a 16-digit number.</p>}
             </div>
           )}
-
           {paymentMethod === "paypal" && (
             <div className="mt-6 text-center">
               <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md shadow-sm">
@@ -168,7 +154,6 @@ export default function PaymentPage() {
               </button>
             </div>
           )}
-
           <button
             onClick={handlePayment}
             className="mt-8 w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-md shadow-md transition"
