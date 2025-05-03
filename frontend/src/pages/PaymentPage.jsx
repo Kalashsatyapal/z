@@ -21,11 +21,13 @@ export default function PaymentPage() {
   };
 
   const handlePayment = () => {
+    // Validate card number if payment method is credit card
     if (paymentMethod === "credit-card" && !cardNumber.match(/^\d{16}$/)) {
       setIsCardValid(false);
       return;
     }
 
+    // Generate PDF receipt
     const doc = new jsPDF();
     doc.setFontSize(22);
     doc.text("Zmart - Order Receipt", 20, 20);
@@ -44,6 +46,8 @@ export default function PaymentPage() {
     // Clear cart and localStorage after payment
     localStorage.setItem("cart", JSON.stringify([]));
     setCart([]);
+
+    // Navigate to success page
     navigate("/success");
   };
 
