@@ -3,13 +3,17 @@ import Home from './pages/Home'
 import AdminLayout from './pages/admin/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import { SignIn, SignedIn, SignedOut } from '@clerk/clerk-react'
+import PaymentPage from "./PaymentPage";
+import SuccessPage from "./SuccessPage";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/payment" element={<PaymentPage />} />
         <Route path="/admin/*" element={<AdminRoutes />} />
+        <Route path="/success" element={<SuccessPage />} />
       </Routes>
     </Router>
   )

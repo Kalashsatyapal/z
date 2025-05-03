@@ -199,13 +199,12 @@ export default function Home() {
                   </div>
 
                   {/* Buy Now Button */}
-                  <button
-                    className="mt-4 w-full flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-indigo font-semibold py-2 rounded-lg transition duration-300"
-                    onClick={generatePDF}
-                  >
-                    <FaShoppingBag />
-                    <span>Buy Now</span>
-                  </button>
+                  <Link to="/payment">
+                    <button className="mt-4 w-full flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-indigo font-semibold py-2 rounded-lg transition duration-300">
+                      <FaShoppingBag />
+                      <span>Proceed to Payment</span>
+                    </button>
+                  </Link>
                 </>
               )}
             </div>
