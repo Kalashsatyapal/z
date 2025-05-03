@@ -48,22 +48,22 @@ export default function PaymentPage() {
   }
 
   return (
-    <div className="bg-[#f3f3f3] min-h-screen p-6">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="bg-[#f8f8f8] min-h-screen p-6 font-sans">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Order Summary */}
-        <div className="md:col-span-2 bg-white p-6 rounded shadow-sm">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+        <div className="md:col-span-2 bg-white p-8 rounded shadow-lg border border-gray-200">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">
             Review Your Order
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-6">
             {cart.map((item) => (
               <div
                 key={item.id}
-                className="flex justify-between items-center border-b pb-3"
+                className="flex justify-between items-center border-b pb-4"
               >
                 <div>
-                  <p className="text-lg font-medium">{item.name}</p>
-                  <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                  <p className="text-xl font-medium text-gray-800">{item.name}</p>
+                  <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
                 </div>
                 <p className="text-lg font-semibold text-gray-700">
                   ${(item.price * item.quantity).toFixed(2)}
@@ -74,30 +74,30 @@ export default function PaymentPage() {
         </div>
 
         {/* Payment Box */}
-        <div className="bg-white p-6 rounded shadow-sm h-fit">
-          <h3 className="text-xl font-semibold mb-4 text-gray-800">
+        <div className="bg-white p-8 rounded shadow-lg border border-gray-200">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-6">
             Order Summary
           </h3>
-          <div className="flex justify-between text-gray-700 mb-2">
+          <div className="flex justify-between text-gray-700 mb-4">
             <span>Items:</span>
             <span>${calculateTotal()}</span>
           </div>
-          <div className="flex justify-between text-gray-700 mb-2">
+          <div className="flex justify-between text-gray-700 mb-4">
             <span>Shipping:</span>
             <span>FREE</span>
           </div>
-          <div className="border-t border-gray-300 my-2"></div>
-          <div className="flex justify-between text-lg font-bold text-gray-900">
+          <div className="border-t border-gray-300 my-4"></div>
+          <div className="flex justify-between text-xl font-bold text-gray-900">
             <span>Order Total:</span>
             <span>${calculateTotal()}</span>
           </div>
 
           {/* Payment Methods */}
-          <div className="mt-4">
-            <label className="block text-gray-800 text-sm font-medium mb-2">
+          <div className="mt-6">
+            <label className="block text-gray-800 text-sm font-medium mb-4">
               Choose Payment Method:
             </label>
-            <div className="space-y-2">
+            <div className="space-y-4">
               <div className="flex items-center">
                 <input
                   type="radio"
@@ -108,7 +108,7 @@ export default function PaymentPage() {
                   onChange={() => setPaymentMethod("credit-card")}
                   className="mr-2"
                 />
-                <label htmlFor="credit-card" className="text-gray-700">
+                <label htmlFor="credit-card" className="text-gray-700 text-lg">
                   Credit/Debit Card
                 </label>
               </div>
@@ -122,7 +122,7 @@ export default function PaymentPage() {
                   onChange={() => setPaymentMethod("paypal")}
                   className="mr-2"
                 />
-                <label htmlFor="paypal" className="text-gray-700">
+                <label htmlFor="paypal" className="text-gray-700 text-lg">
                   PayPal
                 </label>
               </div>
@@ -131,20 +131,20 @@ export default function PaymentPage() {
 
           {/* Payment Form */}
           {paymentMethod === "credit-card" && (
-            <div className="mt-4">
+            <div className="mt-6">
               <label className="block text-gray-800 text-sm font-medium mb-2">
                 Credit Card Number
               </label>
               <input
                 type="text"
-                className="w-full p-3 border border-gray-300 rounded-md"
+                className="w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 placeholder="1234 5678 1234 5678"
               />
             </div>
           )}
           {paymentMethod === "paypal" && (
-            <div className="mt-4 text-center">
-              <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded">
+            <div className="mt-6 text-center">
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md shadow-sm">
                 Pay with PayPal
               </button>
             </div>
@@ -152,7 +152,7 @@ export default function PaymentPage() {
 
           <button
             onClick={handlePayment}
-            className="mt-6 w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 rounded transition"
+            className="mt-8 w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-md shadow-md transition"
           >
             Place your order
           </button>
