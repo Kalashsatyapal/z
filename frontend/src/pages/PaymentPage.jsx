@@ -5,6 +5,8 @@ import jsPDF from "jspdf";
 export default function PaymentPage() {
   const [cart, setCart] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
+  const [cardNumber, setCardNumber] = useState("");
+  const [isCardValid, setIsCardValid] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +21,11 @@ export default function PaymentPage() {
   };
 
   const handlePayment = () => {
+    if (paymentMethod === "credit-card" && !cardNumber.match(/^\d{16}$/)) {
+      setIsCardValid(false);
+      return;
+    }
+
     const doc = new jsPDF();
     doc.setFontSize(22);
     doc.text("Zmart - Order Receipt", 20, 20);
@@ -34,6 +41,7 @@ export default function PaymentPage() {
     doc.text("Total: $" + calculateTotal(), 20, y + 10);
     doc.save("receipt.pdf");
 
+    // Clear cart and localStorage after payment
     localStorage.setItem("cart", JSON.stringify([]));
     setCart([]);
     navigate("/success");
@@ -52,15 +60,10 @@ export default function PaymentPage() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Order Summary */}
         <div className="md:col-span-2 bg-white p-8 rounded shadow-lg border border-gray-200">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6">
-            Review Your Order
-          </h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">Review Your Order</h2>
           <div className="space-y-6">
             {cart.map((item) => (
-              <div
-                key={item.id}
-                className="flex justify-between items-center border-b pb-4"
-              >
+              <div key={item.id} className="flex justify-between items-center border-b pb-4">
                 <div>
                   <p className="text-xl font-medium text-gray-800">{item.name}</p>
                   <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
@@ -75,9 +78,7 @@ export default function PaymentPage() {
 
         {/* Payment Box */}
         <div className="bg-white p-8 rounded shadow-lg border border-gray-200">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-6">
-            Order Summary
-          </h3>
+          <h3 className="text-2xl font-semibold text-gray-800 mb-6">Order Summary</h3>
           <div className="flex justify-between text-gray-700 mb-4">
             <span>Items:</span>
             <span>${calculateTotal()}</span>
@@ -137,11 +138,15 @@ export default function PaymentPage() {
               </label>
               <input
                 type="text"
-                className="w-full p-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className={`w-full p-4 border ${isCardValid ? 'border-gray-300' : 'border-red-500'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400`}
                 placeholder="1234 5678 1234 5678"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(e.target.value)}
               />
+              {!isCardValid && <p className="text-red-500 text-sm mt-2">Invalid card number. Please enter a 16-digit number.</p>}
             </div>
           )}
+
           {paymentMethod === "paypal" && (
             <div className="mt-6 text-center">
               <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md shadow-sm">
