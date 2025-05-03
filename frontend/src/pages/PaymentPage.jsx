@@ -4,6 +4,7 @@ import jsPDF from "jspdf";
 
 export default function PaymentPage() {
   const [cart, setCart] = useState([]);
+  const [paymentMethod, setPaymentMethod] = useState("credit-card");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -90,6 +91,64 @@ export default function PaymentPage() {
             <span>Order Total:</span>
             <span>${calculateTotal()}</span>
           </div>
+
+          {/* Payment Methods */}
+          <div className="mt-4">
+            <label className="block text-gray-800 text-sm font-medium mb-2">
+              Choose Payment Method:
+            </label>
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="credit-card"
+                  name="payment-method"
+                  value="credit-card"
+                  checked={paymentMethod === "credit-card"}
+                  onChange={() => setPaymentMethod("credit-card")}
+                  className="mr-2"
+                />
+                <label htmlFor="credit-card" className="text-gray-700">
+                  Credit/Debit Card
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="paypal"
+                  name="payment-method"
+                  value="paypal"
+                  checked={paymentMethod === "paypal"}
+                  onChange={() => setPaymentMethod("paypal")}
+                  className="mr-2"
+                />
+                <label htmlFor="paypal" className="text-gray-700">
+                  PayPal
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Form */}
+          {paymentMethod === "credit-card" && (
+            <div className="mt-4">
+              <label className="block text-gray-800 text-sm font-medium mb-2">
+                Credit Card Number
+              </label>
+              <input
+                type="text"
+                className="w-full p-3 border border-gray-300 rounded-md"
+                placeholder="1234 5678 1234 5678"
+              />
+            </div>
+          )}
+          {paymentMethod === "paypal" && (
+            <div className="mt-4 text-center">
+              <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded">
+                Pay with PayPal
+              </button>
+            </div>
+          )}
 
           <button
             onClick={handlePayment}
