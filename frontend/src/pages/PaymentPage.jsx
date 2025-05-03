@@ -33,44 +33,71 @@ export default function PaymentPage() {
     doc.text("Total: $" + calculateTotal(), 20, y + 10);
     doc.save("receipt.pdf");
 
-    // Clear cart
     localStorage.setItem("cart", JSON.stringify([]));
     setCart([]);
-
-    // Navigate to success page
     navigate("/success");
   };
 
   if (cart.length === 0) {
-    return <div className="p-8 text-center text-xl">Your cart is empty.</div>;
+    return (
+      <div className="p-8 text-center text-xl font-medium text-gray-600">
+        Your cart is empty.
+      </div>
+    );
   }
 
   return (
-    <div className="p-8 min-h-screen bg-gray-100">
-      <h2 className="text-2xl font-bold mb-4">Payment Page</h2>
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-xl mx-auto">
-        <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
-        <ul>
-          {cart.map((item) => (
-            <li key={item.id} className="flex justify-between mb-2">
-              <span>
-                {item.name} x{item.quantity}
-              </span>
-              <span>${(item.price * item.quantity).toFixed(2)}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-4 border-t pt-2 flex justify-between font-bold">
-          <span>Total</span>
-          <span>${calculateTotal()}</span>
+    <div className="bg-[#f3f3f3] min-h-screen p-6">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Order Summary */}
+        <div className="md:col-span-2 bg-white p-6 rounded shadow-sm">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            Review Your Order
+          </h2>
+          <div className="space-y-4">
+            {cart.map((item) => (
+              <div
+                key={item.id}
+                className="flex justify-between items-center border-b pb-3"
+              >
+                <div>
+                  <p className="text-lg font-medium">{item.name}</p>
+                  <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                </div>
+                <p className="text-lg font-semibold text-gray-700">
+                  ${(item.price * item.quantity).toFixed(2)}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <button
-          onClick={handlePayment}
-          className="mt-6 w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition"
-        >
-          Pay Now
-        </button>
+        {/* Payment Box */}
+        <div className="bg-white p-6 rounded shadow-sm h-fit">
+          <h3 className="text-xl font-semibold mb-4 text-gray-800">
+            Order Summary
+          </h3>
+          <div className="flex justify-between text-gray-700 mb-2">
+            <span>Items:</span>
+            <span>${calculateTotal()}</span>
+          </div>
+          <div className="flex justify-between text-gray-700 mb-2">
+            <span>Shipping:</span>
+            <span>FREE</span>
+          </div>
+          <div className="border-t border-gray-300 my-2"></div>
+          <div className="flex justify-between text-lg font-bold text-gray-900">
+            <span>Order Total:</span>
+            <span>${calculateTotal()}</span>
+          </div>
+
+          <button
+            onClick={handlePayment}
+            className="mt-6 w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 rounded transition"
+          >
+            Place your order
+          </button>
+        </div>
       </div>
     </div>
   );
