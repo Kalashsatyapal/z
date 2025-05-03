@@ -7,6 +7,7 @@ export default function PaymentPage() {
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
   const [cardNumber, setCardNumber] = useState("");
   const [isCardValid, setIsCardValid] = useState(true);
+  const [showCardNumber, setShowCardNumber] = useState(false);  // Toggle for visibility
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -140,13 +141,22 @@ export default function PaymentPage() {
               <label className="block text-gray-800 text-sm font-medium mb-2">
                 Credit Card Number
               </label>
-              <input
-                type="text"
-                className={`w-full p-4 border ${isCardValid ? 'border-gray-300' : 'border-red-500'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400`}
-                placeholder="1234 5678 1234 5678"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-              />
+              <div className="flex items-center">
+                <input
+                  type={showCardNumber ? "text" : "password"} // Toggle between password and text type
+                  className={`w-full p-4 border ${isCardValid ? 'border-gray-300' : 'border-red-500'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400`}
+                  placeholder="1234 5678 1234 5678"
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCardNumber(!showCardNumber)}
+                  className="ml-2 text-sm text-gray-600"
+                >
+                  {showCardNumber ? "Hide" : "Show"}
+                </button>
+              </div>
               {!isCardValid && <p className="text-red-500 text-sm mt-2">Invalid card number. Please enter a 16-digit number.</p>}
             </div>
           )}
