@@ -3,8 +3,8 @@ import Home from './pages/Home'
 import AdminLayout from './pages/admin/AdminLayout'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import { SignIn, SignedIn, SignedOut } from '@clerk/clerk-react'
-import PaymentPage from "./PaymentPage";
-import SuccessPage from "./SuccessPage";
+import PaymentPage from "./pages/PaymentPage";
+import SuccessPage from "./pages/SuccessPage";
 
 function App() {
   return (
